@@ -5,17 +5,17 @@ import smtplib
 from datetime import datetime
 import schedule
 import time
+from creds import api_key, sender_email, receiver_email, ps
 
 url = 'https://pro-api.coinmarketcap.com/v1/'
 endpoint = 'cryptocurrency/quotes/latest'
-api_key = "c11b110a-bff2-4d34-bd5d-534c56255bfd"
 parameters = {
   'symbol':'ETH',
   'convert':'USD'
 }
 headers = {
   'Accepts': 'application/json',
-  'X-CMC_PRO_API_KEY': 'c11b110a-bff2-4d34-bd5d-534c56255bfd',
+  'X-CMC_PRO_API_KEY': api_key,
 }
 file_name = "eth_price.json"
 
@@ -58,9 +58,9 @@ def calc_email():
   if last_price:
     percentage_change = ((last_price - price) / last_price) * 100
     if percentage_change >= 10:
-        sender = "neoncryptoapitest@gmail.com"
-        receiver = "neoncryptoapitest@gmail.com"
-        password = "cctw itvw bomk zluj"
+        sender = sender_email
+        receiver = receiver_email
+        password = ps
         subject = "Crypto Prices"
         body = f"There was a {percentage_change} drop in price this last week"
 
@@ -80,11 +80,10 @@ def calc_email():
         except smtplib.SMTPAuthenticationError:
           print("Error: Unable to sign in")
     else:
-          print("No big change :( )")
+          print("No big change :(")
           
-schedule.every(20).seconds.do(calc_email)
+schedule.every(4).hours.do(calc_email)
 # Keep the script running to execute the scheduled task
 while True:
     schedule.run_pending()
     time.sleep(1)  # Sleep to avoid high CPU usage
-
